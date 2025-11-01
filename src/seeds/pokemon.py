@@ -1,21 +1,27 @@
 def catch_pokemon_data(pokemon_id: int):
-
     import requests
 
     url = f"https://pokeapi.co/api/v2/pokemon/{pokemon_id}"
     response = requests.get(url=url)
     data = response.json()
     data_types = data['types']
-    type_dict = {}
-    type_list = []
-
+    type_list = []  
+    print(f'Processing Pokemon ID: {pokemon_id}')
+    
+    i_types_list = []
     for i in data_types:
-        type_dict['name'] = data['name']
-        type_dict['type'] = i['type']['name']
-        type_list.append(type_dict)
+        i_types_list.append(i['type']['name'])
+    
+    pokemons_type = ', '.join(i_types_list)
+    pokemons_type = str(pokemons_type)
+    print(f'\n{pokemons_type}')
+    type_dict = {  
+        'name': data['name'],
+        'type': pokemons_type
+    }
+    type_list.append(type_dict)
 
-        print(type_list)
-    return type_list  
+    return type_list
 
 def check_pokemon_data(pokemons_data_list: list): 
     from core.models import PokemonSchema   
@@ -28,12 +34,16 @@ def seed_pokemons(pokemons_data_list: list):
     from core.db import session
     from core.models import Pokemon
 
-    pokemons_to_add = []
-
     for pokemon_data in pokemons_data_list:
-        pokemon = Pokemon(name=pokemon_data['name'], type=pokemon_data['type'])
-        pokemons_to_add.append(pokemon)
+        pokemon = Pokemon(
+            name=pokemon_data['name'],
+            type=pokemon_data['type']
+        )
+        session.add(pokemon)
+    
+    session.commit()
+    
+    return pokemons_data_list  
 
-    with session as s:
-        s.add_all(pokemons_to_add)
-        s.commit()
+
+    

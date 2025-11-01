@@ -15,7 +15,7 @@ class Pokemon(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=False, index=True, nullable=False)
-    type = Column(String, index=False, nullable=False)
+    type = Column(String, index=True, nullable=False)
     created_at = Column(String, default=func.now())
 
 
